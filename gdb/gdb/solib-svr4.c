@@ -702,6 +702,16 @@ elf_locate_base (void)
   struct minimal_symbol *msymbol;
   CORE_ADDR dyn_ptr;
 
+  // krnlyng moved up
+  /* This may be a static executable.  Look for the symbol
+     conventionally named _r_debug, as a last resort.  */
+  msymbol = lookup_minimal_symbol ("_hybris_r_debug", NULL, symfile_objfile);
+  if (msymbol.minsym != NULL)
+    {
+    warning (_("found _hybris_r_debug!!"));
+    return BMSYMBOL_VALUE_ADDRESS (msymbol);
+    }
+
   /* Look for DT_MIPS_RLD_MAP first.  MIPS executables use this
      instead of DT_DEBUG, although they sometimes contain an unused
      DT_DEBUG.  */
@@ -724,12 +734,6 @@ elf_locate_base (void)
   if (scan_dyntag (DT_DEBUG, exec_bfd, &dyn_ptr)
       || scan_dyntag_auxv (DT_DEBUG, &dyn_ptr))
     return dyn_ptr;
-
-  /* This may be a static executable.  Look for the symbol
-     conventionally named _r_debug, as a last resort.  */
-  msymbol = lookup_minimal_symbol ("_r_debug", NULL, symfile_objfile);
-  if (msymbol != NULL)
-    return SYMBOL_VALUE_ADDRESS (msymbol);
 
   /* DT_DEBUG entry not found.  */
   return 0;
