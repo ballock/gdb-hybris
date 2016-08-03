@@ -706,10 +706,10 @@ elf_locate_base (void)
   /* This may be a static executable.  Look for the symbol
      conventionally named _r_debug, as a last resort.  */
   msymbol = lookup_minimal_symbol ("_hybris_r_debug", NULL, symfile_objfile);
-  if (msymbol.minsym != NULL)
+  if (msymbol != NULL)
     {
     warning (_("found _hybris_r_debug!!"));
-    return BMSYMBOL_VALUE_ADDRESS (msymbol);
+    return SYMBOL_VALUE_ADDRESS (msymbol);
     }
 
   /* Look for DT_MIPS_RLD_MAP first.  MIPS executables use this
